@@ -1,8 +1,6 @@
 import type { Subscription } from "../types";
 
 export class DashService {
-  constructor() {}
-
   async fetchSubscriptions(): Promise<Subscription[]> {
     // this is dirty type
     const fakeData = (await import("./mockData.json"))

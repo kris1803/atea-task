@@ -7,3 +7,14 @@ export interface Subscription {
   monthlyCost: number;
   renewalDate: string;
 }
+
+export type SubscriptionFilterPayload = {
+  subscriptions: Subscription[];
+  customerFilter: string;
+  statusFilter: Subscription["status"] | null;
+};
+
+export type SortState = {
+  key: keyof Subscription;
+  dir: "ascending" | "descending";
+};

@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { AuthPage } from "../features/auth/view/AuthPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { DashPage } from "../features/dash/view/DashPage";
-import { AuthProvider } from "../features/auth/data/AuthContext";
+import { AuthProvider } from "../features/auth/data/AuthProvider";
 
 export const Router = (): React.ReactElement => {
   return (

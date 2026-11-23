@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { dashService } from "../../../lib/services";
-import type { Subscription } from "../types";
+import type { SortState, Subscription } from "../types";
+import {
+  filterSubscriptions,
+  sortSubscriptions,
+  summarize,
+} from "../lib/utils";
 
-export type DashState =
+type DashState =
   | { status: "loading" }
   | { status: "error"; message: string }
   | {
@@ -16,6 +21,7 @@ export const useDashPage = () => {
   const [statusFilter, setStatusFilter] = useState<
     Subscription["status"] | null
   >(null);
+  const [sort, setSort] = useState<SortState | null>(null);
 
   useEffect(() => {
     let cancelling = false;
@@ -56,26 +62,33 @@ export const useDashPage = () => {
     );
   };
 
-  const filteredSubscriptions = useMemo(() => {
-    if (dashState.status !== "success") return [];
-    return dashState.data.filter((subscription) => {
-      const customerFilterPass =
-        customerFilter.length > 0
-          ? subscription.customerName
-              .toLowerCase()
-              .includes(customerFilter.toLowerCase())
-          : true;
-      const statusFilterPass =
-        statusFilter !== null ? subscription.status === statusFilter : true;
+  const onPressSortMonthlyCost = () => {
+    if (!sort) return setSort({ dir: "ascending", key: "monthlyCost" });
+    if (sort.dir === "ascending")
+      return setSort({ dir: "descending", key: "monthlyCost" });
+    setSort(null);
+  };
 
-      return customerFilterPass && statusFilterPass;
-    });
-  }, [dashState, customerFilter, statusFilter]);
+  const filteredSortedSubscriptions = useMemo(() => {
+    if (dashState.status !== "success") return [];
+    return [
+      ...filterSubscriptions({
+        subscriptions: dashState.data,
+        customerFilter,
+        statusFilter,
+      }),
+    ].sort((a, b) => sortSubscriptions(a, b, sort));
+  }, [dashState, customerFilter, statusFilter, sort]);
+
+  const summaryData = summarize(filteredSortedSubscriptions);
 
   return {
     dashState,
+    subscriptions: filteredSortedSubscriptions,
+    sort,
+    summaryData,
     onSelectStatus,
     onChangeClientInput,
-    filteredSubscriptions,
+    onPressSortMonthlyCost,
   };
 };
