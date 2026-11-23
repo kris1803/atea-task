@@ -15,11 +15,11 @@ export const fakeLoginApiCall = (_url: string, payload: LoginPayload) =>
       if (foundUser) {
         resolve({
           user: {
-            username: "JohnDoe",
+            username: payload.username,
           },
         });
       } else {
-        reject("User not found.");
+        reject(new Error("User not found."));
       }
     }, 500);
   });

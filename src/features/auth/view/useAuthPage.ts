@@ -1,11 +1,11 @@
-import React, { startTransition, type ChangeEvent } from "react";
+import React, { startTransition, useEffect, type ChangeEvent } from "react";
 import { useAuth } from "../data/AuthContext";
 import { useNavigate } from "react-router";
 
 export const useAuthPage = () => {
   const [username, setUsername] = React.useState("");
   const [pass, setPass] = React.useState("");
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
 
   const [error, submitAction, isPending] = React.useActionState(async () => {
@@ -33,6 +33,10 @@ export const useAuthPage = () => {
     setUsername(e.target.value);
   const onChangePassword = (e: ChangeEvent<HTMLInputElement>) =>
     setPass(e.target.value);
+
+  useEffect(() => {
+    if (user) navigate("/dash", { replace: true });
+  }, [user, navigate]);
 
   return {
     pass,
